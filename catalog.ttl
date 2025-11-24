@@ -1,0 +1,496 @@
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix vcard: <https://www.w3.org/2006/vcard/ns#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcm: <http://areasciencepark.it/datacenter/ns#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+
+# This catalog imports the Data Center Monitoring Ontology
+<http://areasciencepark.it/datacenter/catalog> 
+  owl:imports <http://127.0.0.1:8000/ontology.ttl> .
+
+# Catalog
+dcm:catalog a dcat:Catalog ;
+  dct:title "Area Science Park Data Center Monitoring Catalog" ;
+  dct:description "A catalog of time-series monitoring datasets from HPC infrastructure at Area Science Park, Padriciano, Trieste" ;
+  dct:publisher [ 
+    a foaf:Organization ;
+    foaf:name "Area Science Park"
+  ] ;
+  dct:issued "2025-11-18"^^xsd:date ;
+  dcat:dataset dcm:monitoring-nov2025 .
+
+# Main Dataset
+dcm:monitoring-nov2025 a dcat:Dataset ;
+  dct:identifier "70b45719-044f-44be-864a-a07ef53b13e0" ;
+  dct:title "Data Center HPC Monitoring Dataset - November 2025" ;
+  dct:description "Time-series monitoring data collected from HPC compute nodes at Area Science Park using Telegraf agents. Includes CPU metrics (usage, frequency, temperature), memory utilization, disk I/O operations, network traffic (Ethernet and InfiniBand), SMART disk health, IPMI hardware sensors, and process statistics. Data collected at 500ms-1s intervals and stored in QuestDB." ;
+  dct:keyword "time series", "data center", "High Performance Computing", "monitoring", "sensors", "CPU", "memory", "disk", "network", "InfiniBand", "SMART", "IPMI", "Telegraf", "QuestDB" ;
+  dct:issued "2025-11-18"^^xsd:date ;
+  dct:modified "2025-11-18"^^xsd:date ;
+  dct:creator [
+    a foaf:Person ;
+    foaf:name "Roberta Lamberti" ;
+    foaf:mbox <mailto:roberta.lamberti@areasciencepark.it>
+  ] ;
+  dct:publisher [ 
+    a foaf:Organization ;
+    foaf:name "Area Science Park"
+  ] ;
+  dcat:contactPoint [
+    a vcard:Individual ;
+    vcard:fn "Roberta Lamberti" ;
+    vcard:hasEmail <mailto:roberta.lamberti@areasciencepark.it>
+  ] ;
+  dct:license <https://creativecommons.org/licenses/by-nc-sa/4.0/> ;
+  dct:temporal [
+    a dct:PeriodOfTime ;
+    dcat:startDate "2025-11-05T09:38:18Z"^^xsd:dateTime ;
+    dcat:endDate "2025-11-06T11:03:17Z"^^xsd:dateTime
+  ] ;
+  dct:spatial [
+    a dct:Location ;
+    rdfs:label "Area Science Park, Padriciano, Trieste, Italy"
+  ] ;
+  dcat:distribution dcm:http-access ;
+  prov:hadMember dcm:cpu-file, dcm:mem-file, dcm:diskio-file, dcm:net-file, 
+    dcm:infiniband-file, dcm:linux-cpu-file, dcm:smart-device-file, 
+    dcm:smart-attribute-file, dcm:ipmi-sensor-file, dcm:procstat-file, 
+    dcm:procstat-lookup-file, dcm:turbostat-file .
+
+# HTTP Distribution
+dcm:http-access a dcat:Distribution ;
+  dct:title "HTTP Online Access" ;
+  dcat:accessURL <https://timeseriesdb.dev.rd.areasciencepark.it/> ;
+  dcat:mediaType "text/csv" .
+
+# CPU Metrics File
+dcm:cpu-file a prov:Entity ;
+  dct:title "cpu.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/cpu.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:CPUMetricsCollection ;
+  dct:description "CPU usage metrics collected at 500ms intervals. Includes per-core and total CPU usage (user, system, idle, iowait, irq, softirq, steal, guest). Conforms to SOSA/SSN sensor observation model." ;
+  sosa:observedProperty dcm:cpu-usage-user, dcm:cpu-usage-system, dcm:cpu-usage-idle, dcm:cpu-usage-iowait ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Memory Metrics File
+dcm:mem-file a prov:Entity ;
+  dct:title "mem.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/mem.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:MemoryMetricsCollection ;
+  dct:description "System memory utilization metrics collected at 500ms intervals. Includes total, used, available, free, cached, buffered, active, inactive memory, and swap statistics." ;
+  sosa:observedProperty dcm:memory-total, dcm:memory-used, dcm:memory-available, dcm:memory-used-percent ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Disk I/O Metrics File
+dcm:diskio-file a prov:Entity ;
+  dct:title "diskio.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/diskio.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:DiskIOMetricsCollection ;
+  dct:description "Disk I/O operations metrics collected at 500ms intervals. Includes reads, writes, read/write bytes, read/write time, IOPS in progress, merged operations." ;
+  sosa:observedProperty dcm:disk-reads, dcm:disk-writes, dcm:disk-read-bytes, dcm:disk-write-bytes ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Network Metrics File
+dcm:net-file a prov:Entity ;
+  dct:title "net.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/net.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:NetworkMetricsCollection ;
+  dct:description "Network interface statistics collected at 500ms intervals. Includes bytes sent/received, packets sent/received, errors, drops, and extensive TCP/IP/UDP/ICMP protocol statistics." ;
+  sosa:observedProperty dcm:network-bytes-recv, dcm:network-bytes-sent, dcm:network-packets-recv, dcm:network-packets-sent ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# InfiniBand Metrics File
+dcm:infiniband-file a prov:Entity ;
+  dct:title "infiniband.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/infiniband.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:InfiniBandMetricsCollection ;
+  dct:description "InfiniBand high-speed network interface metrics. Includes port receive/transmit data and packets, errors, link recovery, RoCE (RDMA over Converged Ethernet) metrics." ;
+  sosa:observedProperty dcm:ib-port-rcv-data, dcm:ib-port-xmit-data ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Linux CPU Frequency and Thermal File
+dcm:linux-cpu-file a prov:Entity ;
+  dct:title "linux_cpu.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/linux_cpu.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:LinuxCPUMetricsCollection ;
+  dct:description "Linux-specific CPU frequency scaling and thermal metrics collected at 500ms intervals. Includes current/min/max frequencies, throttle count and duration." ;
+  sosa:observedProperty dcm:cpu-freq-current, dcm:cpu-freq-max, dcm:cpu-throttle-count ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# SMART Device Health File
+dcm:smart-device-file a prov:Entity ;
+  dct:title "smart_device.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/smart_device.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:SMARTDeviceCollection ;
+  dct:description "SMART disk health monitoring data. Includes overall health status, temperature, model, serial number for storage devices (NVMe, SATA, SAS)." ;
+  sosa:observedProperty dcm:smart-health-ok, dcm:temperature-celsius ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# SMART Attributes File
+dcm:smart-attribute-file a prov:Entity ;
+  dct:title "smart_attribute.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/smart_attribute.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:SMARTAttributeCollection ;
+  dct:description "Detailed SMART attributes for storage devices. Includes raw values, normalized values, thresholds, and flags for each SMART attribute." ;
+  sosa:observedProperty dcm:smart-raw-value ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# IPMI Sensor File
+dcm:ipmi-sensor-file a prov:Entity ;
+  dct:title "ipmi_sensor.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/ipmi_sensor.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:IPMISensorCollection ;
+  dct:description "IPMI (Intelligent Platform Management Interface) hardware sensor data. Includes processor temperatures, fan speeds, voltages, power consumption from baseboard management controller." ;
+  sosa:observedProperty dcm:temperature-celsius, dcm:fan-speed-rpm ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Process Statistics File
+dcm:procstat-file a prov:Entity ;
+  dct:title "procstat.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/procstat.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:ProcessStatsCollection ;
+  dct:description "Process-level monitoring statistics. Includes CPU usage, memory (RSS, VMS), thread count, I/O operations per process." ;
+  sosa:observedProperty dcm:process-cpu-usage, dcm:process-memory-rss ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Process Lookup Table File
+dcm:procstat-lookup-file a prov:Entity ;
+  dct:title "procstat_lookup.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/procstat_lookup.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:ProcessLookupTable ;
+  dct:description "Lookup table mapping process IDs to process names and metadata." ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Turbostat File
+dcm:turbostat-file a prov:Entity ;
+  dct:title "turbostat.csv" ;
+  dcat:accessURL <http://areasciencepark.it/datacenter/datasets/monitoring-nov2025/files/turbostat.csv> ;
+  dct:format "text/csv" ;
+  dct:conformsTo dcm:TurbostatMetricsCollection ;
+  dct:description "Advanced CPU metrics from Linux turbostat utility. Provides detailed CPU C-states, P-states, frequency, temperature, and power consumption data." ;
+  prov:wasGeneratedBy dcm:data-collection-activity ;
+  prov:wasDerivedFrom dcm:questdb-system .
+
+# Observable Properties (SOSA/SSN)
+dcm:cpu-usage-user a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - User Space" ;
+  rdfs:comment "Percentage of CPU time spent executing user space processes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-system a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - System/Kernel" ;
+  rdfs:comment "Percentage of CPU time spent in kernel mode" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-idle a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - Idle" ;
+  rdfs:comment "Percentage of CPU time in idle state" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-iowait a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - I/O Wait" ;
+  rdfs:comment "Percentage of CPU time waiting for I/O operations to complete" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:memory-total a sosa:ObservableProperty ;
+  rdfs:label "Total System Memory" ;
+  rdfs:comment "Total physical memory capacity in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-used a sosa:ObservableProperty ;
+  rdfs:label "Used Memory" ;
+  rdfs:comment "Amount of memory currently in use in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-available a sosa:ObservableProperty ;
+  rdfs:label "Available Memory" ;
+  rdfs:comment "Amount of memory available for allocation in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-used-percent a sosa:ObservableProperty ;
+  rdfs:label "Memory Usage Percentage" ;
+  rdfs:comment "Percentage of total memory in use" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:disk-reads a sosa:ObservableProperty ;
+  rdfs:label "Disk Read Operations" ;
+  rdfs:comment "Number of completed read operations" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:disk-writes a sosa:ObservableProperty ;
+  rdfs:label "Disk Write Operations" ;
+  rdfs:comment "Number of completed write operations" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:disk-read-bytes a sosa:ObservableProperty ;
+  rdfs:label "Disk Bytes Read" ;
+  rdfs:comment "Total bytes read from disk" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:disk-write-bytes a sosa:ObservableProperty ;
+  rdfs:label "Disk Bytes Written" ;
+  rdfs:comment "Total bytes written to disk" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-bytes-recv a sosa:ObservableProperty ;
+  rdfs:label "Network Bytes Received" ;
+  rdfs:comment "Total bytes received through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-bytes-sent a sosa:ObservableProperty ;
+  rdfs:label "Network Bytes Sent" ;
+  rdfs:comment "Total bytes sent through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-packets-recv a sosa:ObservableProperty ;
+  rdfs:label "Network Packets Received" ;
+  rdfs:comment "Total packets received through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:network-packets-sent a sosa:ObservableProperty ;
+  rdfs:label "Network Packets Sent" ;
+  rdfs:comment "Total packets sent through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:ib-port-rcv-data a sosa:ObservableProperty ;
+  rdfs:label "InfiniBand Port Receive Data" ;
+  rdfs:comment "Total data received on InfiniBand port" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:ib-port-xmit-data a sosa:ObservableProperty ;
+  rdfs:label "InfiniBand Port Transmit Data" ;
+  rdfs:comment "Total data transmitted on InfiniBand port" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:cpu-freq-current a sosa:ObservableProperty ;
+  rdfs:label "Current CPU Frequency" ;
+  rdfs:comment "Current operating frequency of CPU" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/HZ> .
+
+dcm:cpu-freq-max a sosa:ObservableProperty ;
+  rdfs:label "Maximum CPU Frequency" ;
+  rdfs:comment "Maximum rated frequency of CPU" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/HZ> .
+
+dcm:cpu-throttle-count a sosa:ObservableProperty ;
+  rdfs:label "CPU Throttle Count" ;
+  rdfs:comment "Number of times CPU has been thermally throttled" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:smart-health-ok a sosa:ObservableProperty ;
+  rdfs:label "SMART Health Status" ;
+  rdfs:comment "Overall health status of storage device (true=healthy, false=failing)" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/UNITLESS> .
+
+dcm:temperature-celsius a sosa:ObservableProperty ;
+  rdfs:label "Temperature" ;
+  rdfs:comment "Temperature measurement in degrees Celsius" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/DEG_C> .
+
+dcm:fan-speed-rpm a sosa:ObservableProperty ;
+  rdfs:label "Fan Speed" ;
+  rdfs:comment "Fan rotation speed in revolutions per minute" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/REV-PER-MIN> .
+
+dcm:smart-raw-value a sosa:ObservableProperty ;
+  rdfs:label "SMART Raw Value" ;
+  rdfs:comment "Raw value of SMART attribute" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/UNITLESS> .
+
+dcm:process-cpu-usage a sosa:ObservableProperty ;
+  rdfs:label "Process CPU Usage" ;
+  rdfs:comment "CPU usage percentage for specific process" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:process-memory-rss a sosa:ObservableProperty ;
+  rdfs:label "Process Resident Set Size" ;
+  rdfs:comment "Resident set size (physical memory) used by process" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+# Data Collection Provenance (PROV-O)
+dcm:data-collection-activity a prov:Activity ;
+  prov:startedAtTime "2025-11-05T09:38:18Z"^^xsd:dateTime ;
+  prov:endedAtTime "2025-11-06T11:03:17Z"^^xsd:dateTime ;
+  prov:wasAssociatedWith dcm:telegraf-agent, dcm:questdb-system ;
+  rdfs:label "Data Collection Activity - November 2025" ;
+  rdfs:comment "Automated collection of monitoring metrics from HPC infrastructure using Telegraf agents writing to QuestDB time-series database" .
+
+dcm:telegraf-agent a prov:Agent, prov:SoftwareAgent ;
+  rdfs:label "Telegraf Monitoring Agent" ;
+  dct:description "Open-source server agent for collecting and reporting metrics and events from systems and applications" ;
+  foaf:homepage <https://www.influxdata.com/time-series-platform/telegraf/> .
+
+dcm:questdb-system a prov:Agent, prov:SoftwareAgent ;
+  rdfs:label "QuestDB Time-Series Database" ;
+  dct:description "High-performance time-series database for real-time analytics at Area Science Park" ;
+  foaf:homepage <https://questdb.io/> ;
+  dcat:accessURL <https://timeseriesdb.dev.rd.areasciencepark.it/index.html> .
+
+# Note: Schema/Ontology classes and properties are now defined in datacenter-ontology.ttl
+# This catalog imports them via owl:imports statement at the top
+
+# Observable Properties for dataset files (SOSA/SSN)
+dcm:cpu-usage-user a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - User Space" ;
+  rdfs:comment "Percentage of CPU time spent executing user space processes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-system a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - System/Kernel" ;
+  rdfs:comment "Percentage of CPU time spent in kernel mode" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-idle a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - Idle" ;
+  rdfs:comment "Percentage of CPU time in idle state" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpu-usage-iowait a sosa:ObservableProperty ;
+  rdfs:label "CPU Usage - I/O Wait" ;
+  rdfs:comment "Percentage of CPU time waiting for I/O operations to complete" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:memory-total a sosa:ObservableProperty ;
+  rdfs:label "Total System Memory" ;
+  rdfs:comment "Total physical memory capacity in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-used a sosa:ObservableProperty ;
+  rdfs:label "Used Memory" ;
+  rdfs:comment "Amount of memory currently in use in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-available a sosa:ObservableProperty ;
+  rdfs:label "Available Memory" ;
+  rdfs:comment "Amount of memory available for allocation in bytes" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memory-used-percent a sosa:ObservableProperty ;
+  rdfs:label "Memory Usage Percentage" ;
+  rdfs:comment "Percentage of total memory in use" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:disk-reads a sosa:ObservableProperty ;
+  rdfs:label "Disk Read Operations" ;
+  rdfs:comment "Number of completed read operations" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:disk-writes a sosa:ObservableProperty ;
+  rdfs:label "Disk Write Operations" ;
+  rdfs:comment "Number of completed write operations" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:disk-read-bytes a sosa:ObservableProperty ;
+  rdfs:label "Disk Bytes Read" ;
+  rdfs:comment "Total bytes read from disk" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:disk-write-bytes a sosa:ObservableProperty ;
+  rdfs:label "Disk Bytes Written" ;
+  rdfs:comment "Total bytes written to disk" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-bytes-recv a sosa:ObservableProperty ;
+  rdfs:label "Network Bytes Received" ;
+  rdfs:comment "Total bytes received through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-bytes-sent a sosa:ObservableProperty ;
+  rdfs:label "Network Bytes Sent" ;
+  rdfs:comment "Total bytes sent through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:network-packets-recv a sosa:ObservableProperty ;
+  rdfs:label "Network Packets Received" ;
+  rdfs:comment "Total packets received through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:network-packets-sent a sosa:ObservableProperty ;
+  rdfs:label "Network Packets Sent" ;
+  rdfs:comment "Total packets sent through network interface" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:ib-port-rcv-data a sosa:ObservableProperty ;
+  rdfs:label "InfiniBand Port Receive Data" ;
+  rdfs:comment "Total data received on InfiniBand port" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:ib-port-xmit-data a sosa:ObservableProperty ;
+  rdfs:label "InfiniBand Port Transmit Data" ;
+  rdfs:comment "Total data transmitted on InfiniBand port" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:cpu-freq-current a sosa:ObservableProperty ;
+  rdfs:label "Current CPU Frequency" ;
+  rdfs:comment "Current operating frequency of CPU" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/HZ> .
+
+dcm:cpu-freq-max a sosa:ObservableProperty ;
+  rdfs:label "Maximum CPU Frequency" ;
+  rdfs:comment "Maximum rated frequency of CPU" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/HZ> .
+
+dcm:cpu-throttle-count a sosa:ObservableProperty ;
+  rdfs:label "CPU Throttle Count" ;
+  rdfs:comment "Number of times CPU has been thermally throttled" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:smart-health-ok a sosa:ObservableProperty ;
+  rdfs:label "SMART Health Status" ;
+  rdfs:comment "Overall health status of storage device (true=healthy, false=failing)" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/UNITLESS> .
+
+dcm:temperature-celsius a sosa:ObservableProperty ;
+  rdfs:label "Temperature" ;
+  rdfs:comment "Temperature measurement in degrees Celsius" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/DEG_C> .
+
+dcm:fan-speed-rpm a sosa:ObservableProperty ;
+  rdfs:label "Fan Speed" ;
+  rdfs:comment "Fan rotation speed in revolutions per minute" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/REV-PER-MIN> .
+
+dcm:smart-raw-value a sosa:ObservableProperty ;
+  rdfs:label "SMART Raw Value" ;
+  rdfs:comment "Raw value of SMART attribute" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/UNITLESS> .
+
+dcm:process-cpu-usage a sosa:ObservableProperty ;
+  rdfs:label "Process CPU Usage" ;
+  rdfs:comment "CPU usage percentage for specific process" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:process-memory-rss a sosa:ObservableProperty ;
+  rdfs:label "Process Resident Set Size" ;
+  rdfs:comment "Resident set size (physical memory) used by process" ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .

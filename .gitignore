@@ -1,0 +1,31 @@
+# Environment variables
+.env
+
+# Data directories
+datasets/
+Docs/
+books/
+TODO.md
+./.vscode
+
+# Python cache
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+
+# Case study directory
+flights-dataset-case-study/
+
+# Configuration files
+telegraf.conf
+setup.sh
+
+# Django
+*.pyc
+*.pyo
+db.sqlite3
+*.log
+
+# Virtual environment
+env/
+venv/

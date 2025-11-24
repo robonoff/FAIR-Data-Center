@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Datasets - Data Center Monitoring{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Monitoring Datasets</h2>
+    <p>Browse all available time-series monitoring datasets</p>
+</div>
+
+{% for dataset in datasets %}
+<div class="card">
+    <h2>{{ dataset.title }}</h2>
+    <p>{{ dataset.description }}</p>
+    
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Dataset ID</td>
+            <td><code>{{ dataset.dataset_id }}</code></td>
+        </tr>
+        <tr>
+            <td>Time Period</td>
+            <td>{{ dataset.start_date|date:"Y-m-d H:i:s" }} to {{ dataset.end_date|date:"Y-m-d H:i:s" }}</td>
+        </tr>
+        <tr>
+            <td>Creator</td>
+            <td>{{ dataset.creator_name }} ({{ dataset.creator_email }})</td>
+        </tr>
+        <tr>
+            <td>Publisher</td>
+            <td>{{ dataset.publisher_name }}</td>
+        </tr>
+        <tr>
+            <td>License</td>
+            <td><a href="{{ dataset.license_url }}">{{ dataset.license_name }}</a></td>
+        </tr>
+        <tr>
+            <td>Keywords</td>
+            <td>{{ dataset.keywords }}</td>
+        </tr>
+    </table>
+    
+    <h3 style="margin-top: 2rem;">Data Files ({{ dataset.data_files.count }})</h3>
+    <table>
+        <tr>
+            <th>Filename</th>
+            <th>Format</th>
+            <th>Size</th>
+            <th>Rows</th>
+            <th>Description</th>
+        </tr>
+        {% for file in dataset.data_files.all %}
+        <tr>
+            <td><code>{{ file.filename }}</code></td>
+            <td>{{ file.file_format }}</td>
+            <td>{% if file.file_size %}{{ file.file_size|filesizeformat }}{% else %}N/A{% endif %}</td>
+            <td>{% if file.row_count %}{{ file.row_count }}{% else %}N/A{% endif %}</td>
+            <td>{{ file.description|truncatewords:15 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <a href="/datasets/{{ dataset.dataset_id }}/" class="api-link">View Full Details</a>
+    <a href="/api/datasets/{{ dataset.dataset_id }}/" class="api-link">API JSON</a>
+</div>
+{% empty %}
+<div class="card">
+    <p>No datasets available yet.</p>
+</div>
+{% endfor %}
+{% endblock %}

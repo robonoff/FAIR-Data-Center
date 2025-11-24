@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ dataset.title }} - Dataset Details{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ dataset.title }}</h2>
+    <p style="color: #666; margin: 0.5rem 0 0 0; font-size: 0.95rem;">
+        <strong>UUID:</strong> <code style="background: #f0f0f0; padding: 0.2rem 0.5rem; border-radius: 3px;">{{ dataset.dataset_id }}</code>
+    </p>
+    
+    <h3 style="margin-top: 2rem;">Description</h3>
+    <p>{{ dataset.description }}</p>
+    
+    <h3 style="margin-top: 2rem;">Metadata</h3>
+    <table>
+        <tr>
+            <td style="width: 180px;"><strong>Dataset UUID</strong></td>
+            <td><code style="font-size: 0.95rem;">{{ dataset.dataset_id }}</code></td>
+        </tr>
+        <tr>
+            <td><strong>Start Date</strong></td>
+            <td>{{ dataset.start_date|date:"Y-m-d H:i:s T" }}</td>
+        </tr>
+        <tr>
+            <td><strong>End Date</strong></td>
+            <td>{{ dataset.end_date|date:"Y-m-d H:i:s T" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Issued</strong></td>
+            <td>{{ dataset.issued|date:"Y-m-d" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Modified</strong></td>
+            <td>{{ dataset.modified|date:"Y-m-d H:i:s" }}</td>
+        </tr>
+        <tr>
+            <td><strong>Creator</strong></td>
+            <td>{{ dataset.creator_name }} &lt;{{ dataset.creator_email }}&gt;</td>
+        </tr>
+        <tr>
+            <td><strong>Publisher</strong></td>
+            <td>{{ dataset.publisher_name }}</td>
+        </tr>
+        <tr>
+            <td><strong>License</strong></td>
+            <td><a href="{{ dataset.license_url }}" target="_blank">{{ dataset.license_name }}</a></td>
+        </tr>
+        <tr>
+            <td><strong>Keywords</strong></td>
+            <td>{% for keyword in keywords %}<a href="{{ keyword.url }}" target="_blank" rel="noopener noreferrer" title="Learn more about {{ keyword.text }}"><span class="badge" style="cursor: pointer;">{{ keyword.text }}</span></a>{% endfor %}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="card">
+    <h2> Data Files ({{ data_files.count }})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Format</th>
+                <th>Media Type</th>
+                <th>Size</th>
+                <th>Rows</th>
+                <th>Sensor Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in data_files %}
+            <tr>
+                <td><code>{{ file.filename }}</code></td>
+                <td>{{ file.file_format }}</td>
+                <td>{{ file.media_type }}</td>
+                <td>{% if file.file_size %}{{ file.file_size|filesizeformat }}{% else %}-{% endif %}</td>
+                <td>{% if file.row_count %}{{ file.row_count }}{% else %}-{% endif %}</td>
+                <td>{% if file.sensor_type %}{{ file.sensor_type }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <td colspan="6" style="background: #f8f9fa; font-size: 0.9rem;">
+                    {{ file.description }}
+                    <br>
+                    <a href="{% url 'download_file' dataset_id=dataset.dataset_id filename=file.filename %}" 
+                       class="api-link" 
+                       style="margin-top: 0.5rem; background: #102b85;"
+                       download>
+                        Download CSV
+                    </a>
+                    <a href="{% url 'query_observations' dataset_id=dataset.dataset_id table_name=file.filename|slice:':-4' %}?limit=10" 
+                       class="api-link" 
+                       style="margin-top: 0.5rem;">
+                         Query via API
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>Data Provenance (PROV-O)</h2>
+    <p style="margin-bottom: 1.5rem; color: #666;">
+        Provenance information tracks how the data was collected, by whom, and when.
+    </p>
+    
+    {% for activity in activities %}
+        <div style="margin: 1.5rem 0; padding: 1.5rem; background: #f8f9fa; border-left: 4px solid #4CAF50; border-radius: 4px;">
+            <h3 style="margin-top: 0;"> {{ activity.activity_type }}</h3>
+            
+            <table style="margin: 1rem 0;">
+                <tr>
+                    <td style="width: 180px;"><strong>Activity URI</strong></td>
+                    <td><code><a href="/catalog.ttl#{{ activity.activity_id }}" target="_blank">dcm:{{ activity.activity_id }}</a></code></td>
+                </tr>
+                <tr>
+                    <td><strong>Started</strong></td>
+                    <td>{{ activity.start_time|date:"Y-m-d H:i:s T" }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Ended</strong></td>
+                    <td>{% if activity.end_time %}{{ activity.end_time|date:"Y-m-d H:i:s T" }}{% else %}<em>ongoing</em>{% endif %}</td>
+                </tr>
+                <tr>
+                    <td><strong>Duration</strong></td>
+                    <td>
+                        {% if activity.end_time %}
+                            {{ activity.end_time|timesince:activity.start_time }}
+                        {% else %}
+                            <em>ongoing</em>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            
+            <p style="margin: 1rem 0;"><strong>Description:</strong><br>{{ activity.description }}</p>
+            
+            {% if activity.agents.all %}
+                <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 4px;">
+                    <p style="margin: 0 0 0.5rem 0;"><strong> Associated Agents (prov:wasAssociatedWith):</strong></p>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        {% for agent in activity.agents.all %}
+                            <li style="margin: 0.5rem 0;">
+                                <strong>{{ agent.name }}</strong> 
+                                <span class="badge">{{ agent.get_agent_type_display }}</span>
+                                {% if agent.version %}<code>v{{ agent.version }}</code>{% endif %}
+                                <br>
+                                <small style="color: #666;"><strong>URI:</strong> <code><a href="/catalog.ttl#{{ agent.agent_id }}" target="_blank">dcm:{{ agent.agent_id }}</a></code></small>
+                                <br>
+                                <small style="color: #666;">{{ agent.description }}</small>
+                                {% if agent.agent_id == 'questdb-system' %}
+                                    <br><small><strong>Access:</strong> <a href="https://timeseriesdb.dev.rd.areasciencepark.it/index.html" target="_blank">QuestDB Web Console</a></small>
+                                    <br><small><strong>REST API:</strong> <code>https://timeseriesdb.dev.rd.areasciencepark.it/exec?query=SELECT * FROM cpu LIMIT 10</code></small>
+                                    <br><small><strong>SQL Connection:</strong> <code>jdbc:postgresql://timeseriesdb.dev.rd.areasciencepark.it:8812/qdb</code> (requires VPN)</small>
+                                {% endif %}
+                                {% if agent.homepage %}
+                                    <br><small><strong>Homepage:</strong> <a href="{{ agent.homepage }}" target="_blank">{{ agent.homepage }}</a></small>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 4px;">
+                <p style="margin: 0 0 0.5rem 0;"><strong> Generated Data Files (prov:wasGeneratedBy):</strong></p>
+                <ul style="margin: 0.5rem 0 0 1.5rem;">
+                    {% for file in data_files %}
+                        <li style="margin: 0.5rem 0;">
+                            <code>{{ file.filename }}</code>
+                            {% if file.sensor_type %}<small>({{ file.sensor_type }})</small>{% endif %}
+                            {% if file.row_count %}- {{ file.row_count }} observations{% endif %}
+                            <br>
+                            <small style="color: #666;"><strong>URI:</strong> <code><a href="/catalog.ttl#{{ file.filename|slice:":-4" }}-file" target="_blank">dcm:{{ file.filename|slice:":-4" }}-file</a></code></small>
+                            <br>
+                            <small style="color: #999;">prov:wasDerivedFrom <a href="https://timeseriesdb.dev.rd.areasciencepark.it/index.html" target="_blank">dcm:questdb-system</a></small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% empty %}
+        <div style="padding: 2rem; text-align: center; background: #f8f9fa; border-radius: 4px;">
+            <p> No provenance information available.</p>
+            <p style="color: #666; font-size: 0.9rem;">Provenance tracks data collection activities and responsible agents.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2>🔌 API Access</h2>
+    <p>Access this dataset via API:</p>
+    <ul>
+        <li><code>GET /api/datasets/{{ dataset.dataset_id }}/</code> - Dataset metadata (JSON)</li>
+        <li><code>GET /datasets/{{ dataset.dataset_id }}/cpu?limit=100</code> - Query CPU data</li>
+        <li><code>GET /datasets/{{ dataset.dataset_id }}/mem?limit=100&host=thin001</code> - Query with filters</li>
+        <li><code>GET /datasets/{{ dataset.dataset_id }}/diskio?format=csv</code> - Export as CSV</li>
+    </ul>
+    <a href="/api/datasets/{{ dataset.dataset_id }}/" class="api-link">View Dataset JSON</a>
+    <a href="/catalog.ttl" class="api-link">DCAT Catalog (RDF/Turtle)</a>
+</div>
+
+{% endblock %}

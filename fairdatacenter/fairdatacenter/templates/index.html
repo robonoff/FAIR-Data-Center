@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Data Center Monitoring{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome to the Data Center Monitoring FAIR Dataset</h2>
+    <p>
+        This project provides FAIR-compliant access to time-series monitoring data collected from 
+        High-Performance Computing (HPC) infrastructure at Area Science Park.
+    </p>
+    <p>
+        Data was collected using <strong>Telegraf</strong> agents at 500ms-1s intervals and stored in 
+        <strong>QuestDB</strong> time-series database.
+    </p>
+</div>
+
+<div class="card">
+    <h2>Available Datasets</h2>
+    <p><strong>{{ datasets.count }}</strong> monitoring datasets available</p>
+    {% for dataset in datasets %}
+        <div style="margin: 1rem 0; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+            <h3>{{ dataset.title }}</h3>
+            <p>{{ dataset.description|truncatewords:30 }}</p>
+            <p>
+                <strong>Period:</strong> {{ dataset.start_date|date:"Y-m-d H:i" }} to {{ dataset.end_date|date:"Y-m-d H:i" }}<br>
+                <strong>Files:</strong> {{ dataset.data_files.count }}
+            </p>
+            <a href="/datasets/{{ dataset.dataset_id }}/" class="api-link">View Details</a>
+        </div>
+    {% empty %}
+        <p>No datasets available yet. Run <code>python manage.py load_data</code> to populate the database.</p>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2> Compute Nodes</h2>
+    <p><strong>{{ compute_nodes.count }}</strong> compute nodes monitored</p>
+    <ul>
+        {% for node in compute_nodes %}
+            <li><strong>{{ node.hostname }}</strong> - {{ node.description }}</li>
+        {% empty %}
+            <li>No compute nodes registered yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="card">
+    <h2>🔌 API Access</h2>
+    <p>Access data programmatically via our REST API:</p>
+    <ul>
+        <li><code>GET /api/datasets/</code> - List all monitoring datasets</li>
+        <li><code>GET /api/sensors/</code> - List all sensors</li>
+        <li><code>GET /api/compute-nodes/</code> - List compute nodes</li>
+        <li><code>GET /datasets/{uuid}/cpu?limit=100</code> - Query time-series observations</li>
+        <li><code>GET /catalog.ttl</code> - Download DCAT metadata catalog</li>
+    </ul>
+    <a href="/api/" class="api-link">Browse API</a>
+</div>
+
+<div class="card">
+    <h2>Data informations</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>CPU</strong><br>
+            Usage, frequency, temperature
+        </div>
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>Memory</strong><br>
+            Utilization, swap, cache
+        </div>
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>Disk I/O</strong><br>
+            Read/write operations
+        </div>
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>Network</strong><br>
+            Ethernet, InfiniBand
+        </div>
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>SMART</strong><br>
+            Disk health monitoring
+        </div>
+        <div class="badge" style="display: block; padding: 1rem;">
+            <strong>IPMI</strong><br>
+            Hardware sensors
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>FAIR Principles</h2>
+    <table>
+        <tr>
+            <th>Principle</th>
+            <th>Implementation</th>
+        </tr>
+        <tr>
+            <td><strong>Findable</strong></td>
+            <td>DCAT catalog, rich metadata, persistent identifiers</td>
+        </tr>
+        <tr>
+            <td><strong>Accessible</strong></td>
+            <td>HTTP/HTTPS, REST API, standard formats (CSV, JSON)</td>
+        </tr>
+        <tr>
+            <td><strong>Interoperable</strong></td>
+            <td>SOSA/SSN, PROV-O, DCAT ontologies, RDF/Turtle</td>
+        </tr>
+        <tr>
+            <td><strong>Reusable</strong></td>
+            <td>CC BY-NC-SA 4.0 license, provenance tracking, documentation</td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

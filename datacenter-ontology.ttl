@@ -1,0 +1,284 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcm: <http://areasciencepark.it/datacenter/ns#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix qudt: <http://qudt.org/schema/qudt/> .
+
+# Ontology Declaration
+<http://areasciencepark.it/datacenter/ontology> a owl:Ontology ;
+  dct:title "Data Center Monitoring Ontology" ;
+  dct:description "An ontology for describing HPC datacenter monitoring metrics, sensors, and observable properties. Designed for time-series data from Telegraf/QuestDB systems." ;
+  dct:creator "Roberta Lamberti" ;
+  dct:created "2025-11-18"^^xsd:date ;
+  dct:modified "2025-11-18"^^xsd:date ;
+  owl:versionInfo "1.0" ;
+  rdfs:comment "This ontology extends SOSA/SSN for datacenter-specific monitoring concepts including CPU metrics, memory utilization, disk I/O, network traffic, InfiniBand, SMART disk health, IPMI sensors, and process statistics." .
+
+# ============================================
+# CLASSES - Observation Collections
+# ============================================
+
+dcm:CPUMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "CPU Metrics Collection" ;
+  rdfs:comment "Collection of CPU usage and performance metrics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:MemoryMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Memory Metrics Collection" ;
+  rdfs:comment "Collection of system memory utilization metrics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:DiskIOMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Disk I/O Metrics Collection" ;
+  rdfs:comment "Collection of disk input/output operation metrics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:NetworkMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Network Metrics Collection" ;
+  rdfs:comment "Collection of network interface statistics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:InfiniBandMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "InfiniBand Metrics Collection" ;
+  rdfs:comment "Collection of InfiniBand high-speed network metrics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:LinuxCPUMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Linux CPU Metrics Collection" ;
+  rdfs:comment "Collection of Linux-specific CPU frequency and thermal metrics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:SMARTDeviceCollection a rdfs:Class, owl:Class ;
+  rdfs:label "SMART Device Health Collection" ;
+  rdfs:comment "Collection of SMART disk health monitoring data conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:SMARTAttributeCollection a rdfs:Class, owl:Class ;
+  rdfs:label "SMART Attribute Collection" ;
+  rdfs:comment "Collection of detailed SMART disk attributes conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:IPMISensorCollection a rdfs:Class, owl:Class ;
+  rdfs:label "IPMI Sensor Collection" ;
+  rdfs:comment "Collection of IPMI hardware sensor measurements conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:ProcessStatsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Process Statistics Collection" ;
+  rdfs:comment "Collection of process-level monitoring statistics conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+dcm:ProcessLookupTable a rdfs:Class, owl:Class ;
+  rdfs:label "Process Lookup Table" ;
+  rdfs:comment "Lookup table for process identification and metadata" .
+
+dcm:TurbostatMetricsCollection a rdfs:Class, owl:Class ;
+  rdfs:label "Turbostat Metrics Collection" ;
+  rdfs:comment "Collection of advanced CPU metrics from turbostat utility conforming to SOSA observation model" ;
+  rdfs:subClassOf sosa:ObservationCollection .
+
+# ============================================
+# PROPERTIES - Compute Node
+# ============================================
+
+dcm:hasHostname a rdf:Property, owl:DatatypeProperty ;
+  rdfs:label "has hostname" ;
+  rdfs:comment "The fully qualified domain name of the compute node" ;
+  rdfs:domain sosa:Platform ;
+  rdfs:range xsd:string .
+
+dcm:hasLocation a rdf:Property, owl:DatatypeProperty ;
+  rdfs:label "has location" ;
+  rdfs:comment "Physical location of the compute node in the datacenter" ;
+  rdfs:domain sosa:Platform ;
+  rdfs:range xsd:string .
+
+# ============================================
+# PROPERTIES - CPU Metrics
+# ============================================
+
+dcm:cpuUsagePercent a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "CPU usage percentage" ;
+  rdfs:comment "Percentage of CPU time spent in active use" ;
+  rdfs:domain dcm:CPUMetricsCollection ;
+  rdfs:range xsd:decimal ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+dcm:cpuFrequencyMHz a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "CPU frequency in MHz" ;
+  rdfs:comment "Current operating frequency of the CPU core" ;
+  rdfs:domain dcm:LinuxCPUMetricsCollection ;
+  rdfs:range xsd:decimal ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/MegaHZ> .
+
+dcm:cpuTemperatureCelsius a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "CPU temperature in Celsius" ;
+  rdfs:comment "Current temperature of the CPU sensor" ;
+  rdfs:domain dcm:LinuxCPUMetricsCollection ;
+  rdfs:range xsd:decimal ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/DEG_C> .
+
+# ============================================
+# PROPERTIES - Memory Metrics
+# ============================================
+
+dcm:memoryUsageBytes a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "memory usage in bytes" ;
+  rdfs:comment "Amount of memory currently in use" ;
+  rdfs:domain dcm:MemoryMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:memoryUsagePercent a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "memory usage percentage" ;
+  rdfs:comment "Percentage of total memory currently in use" ;
+  rdfs:domain dcm:MemoryMetricsCollection ;
+  rdfs:range xsd:decimal ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+# ============================================
+# PROPERTIES - Disk I/O
+# ============================================
+
+dcm:diskReadBytes a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "disk read bytes" ;
+  rdfs:comment "Number of bytes read from disk" ;
+  rdfs:domain dcm:DiskIOMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:diskWriteBytes a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "disk write bytes" ;
+  rdfs:comment "Number of bytes written to disk" ;
+  rdfs:domain dcm:DiskIOMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:diskIOTime a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "disk I/O time" ;
+  rdfs:comment "Time spent on disk I/O operations" ;
+  rdfs:domain dcm:DiskIOMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/MilliSEC> .
+
+# ============================================
+# PROPERTIES - Network Metrics
+# ============================================
+
+dcm:networkBytesReceived a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "network bytes received" ;
+  rdfs:comment "Number of bytes received through network interface" ;
+  rdfs:domain dcm:NetworkMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:networkBytesSent a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "network bytes sent" ;
+  rdfs:comment "Number of bytes sent through network interface" ;
+  rdfs:domain dcm:NetworkMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:networkPacketsDropped a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "network packets dropped" ;
+  rdfs:comment "Number of network packets dropped" ;
+  rdfs:domain dcm:NetworkMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/NUM> .
+
+dcm:networkInterfaceSpeed a rdf:Property, owl:DatatypeProperty ;
+  rdfs:label "network interface speed" ;
+  rdfs:comment "Maximum speed of the network interface in Mbps" ;
+  rdfs:domain dcm:NetworkMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/MegaBIT-PER-SEC> .
+
+# ============================================
+# PROPERTIES - InfiniBand
+# ============================================
+
+dcm:infinibandPortReceiveData a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "InfiniBand port receive data" ;
+  rdfs:comment "Data received through InfiniBand port" ;
+  rdfs:domain dcm:InfiniBandMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:infinibandPortTransmitData a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "InfiniBand port transmit data" ;
+  rdfs:comment "Data transmitted through InfiniBand port" ;
+  rdfs:domain dcm:InfiniBandMetricsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+# ============================================
+# PROPERTIES - SMART Disk Health
+# ============================================
+
+dcm:smartHealthStatus a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "SMART health status" ;
+  rdfs:comment "Overall health status of the disk from SMART monitoring" ;
+  rdfs:domain dcm:SMARTDeviceCollection ;
+  rdfs:range xsd:string .
+
+dcm:smartTemperature a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "SMART temperature" ;
+  rdfs:comment "Temperature of the disk from SMART sensor" ;
+  rdfs:domain dcm:SMARTDeviceCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/DEG_C> .
+
+dcm:smartPowerOnHours a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "SMART power on hours" ;
+  rdfs:comment "Total hours the disk has been powered on" ;
+  rdfs:domain dcm:SMARTAttributeCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/HR> .
+
+# ============================================
+# PROPERTIES - IPMI Sensors
+# ============================================
+
+dcm:ipmiSensorValue a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "IPMI sensor value" ;
+  rdfs:comment "Raw value from IPMI hardware sensor" ;
+  rdfs:domain dcm:IPMISensorCollection ;
+  rdfs:range xsd:decimal .
+
+dcm:ipmiSensorStatus a rdf:Property, owl:DatatypeProperty ;
+  rdfs:label "IPMI sensor status" ;
+  rdfs:comment "Status of the IPMI hardware sensor" ;
+  rdfs:domain dcm:IPMISensorCollection ;
+  rdfs:range xsd:string .
+
+# ============================================
+# PROPERTIES - Process Statistics
+# ============================================
+
+dcm:processMemoryUsage a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "process memory usage" ;
+  rdfs:comment "Memory used by a specific process" ;
+  rdfs:domain dcm:ProcessStatsCollection ;
+  rdfs:range xsd:integer ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/BYTE> .
+
+dcm:processCPUPercent a rdf:Property, owl:DatatypeProperty, sosa:ObservableProperty ;
+  rdfs:label "process CPU percentage" ;
+  rdfs:comment "CPU usage percentage of a specific process" ;
+  rdfs:domain dcm:ProcessStatsCollection ;
+  rdfs:range xsd:decimal ;
+  qudt:hasUnit <http://qudt.org/vocab/unit/PERCENT> .
+
+# ============================================
+# PROPERTIES - Temporal
+# ============================================
+
+dcm:observationTimestamp a rdf:Property, owl:DatatypeProperty ;
+  rdfs:label "observation timestamp" ;
+  rdfs:comment "Timestamp when the observation was recorded" ;
+  rdfs:domain sosa:Observation ;
+  rdfs:range xsd:dateTime .

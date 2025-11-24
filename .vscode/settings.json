@@ -1,0 +1,11 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/env/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/env/lib/python3.12/site-packages"
+    ],
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}/env/lib/python3.12/site-packages"
+    ],
+    "python-envs.pythonProjects": []
+}
