@@ -1,6 +1,6 @@
 # FAIR Data Center Monitoring
 
-A FAIR-compliant data system for HPC infrastructure monitoring data, developed at Area Science Park, Trieste, Italy. This project is part of the Advanced Data Management exam held by lecturers at INAF and Area Science Park, respectively: (Andrea Bignamini)[linkedin.com/in/andrea-bignamini-aaa2083a?originalSubdomain=it], (Marco Molinaro)[https://www.linkedin.com/in/marco-molinaro/], (Marco Frailis)[https://www.linkedin.com/in/marco-frailis-2779a9b/] and (Federica Bazzocchi)[https://www.linkedin.com/in/federica-bazzocchi-a48b8219/].
+A FAIR-compliant data system for HPC infrastructure monitoring data, developed at Area Science Park, Trieste, Italy. This project is part of the Advanced Data Management exam held by lecturers at INAF and Area Science Park, respectively: [Andrea Bignamini](linkedin.com/in/andrea-bignamini-aaa2083a?originalSubdomain=it), [Marco Molinaro](https://www.linkedin.com/in/marco-molinaro/), [Marco Frailis](https://www.linkedin.com/in/marco-frailis-2779a9b/) and [Federica Bazzocchi](https://www.linkedin.com/in/federica-bazzocchi-a48b8219/).
 
 ## Overview
 
