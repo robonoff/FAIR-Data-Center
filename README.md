@@ -137,23 +137,6 @@ python manage.py load_metadata
 ```bash
 python manage.py runserver
 ```
-
-## Management Commands
-
-### load_metadata
-
-Imports metadata from `catalog.ttl` into Django database using SPARQL queries.
-
-```bash
-python manage.py load_metadata
-```
-
-This command:
-- Parses RDF catalog with RDFLib
-- Extracts dataset, file, sensor, and provenance information
-- Creates/updates Django model instances
-- Links relationships between entities
-
 ## Data Files
 
 The system manages 12 types of monitoring data:
