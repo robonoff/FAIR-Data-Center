@@ -20,6 +20,10 @@ flights-dataset-case-study/
 telegraf.conf
 setup.sh
 
+# QuestDB sync commands
+fairdatacenter/fairdatacenter/management/commands/sync_from_questdb.py
+fairdatacenter/fairdatacenter/management/commands/sync_from_questdb_rest.py
+
 # Django
 *.pyc
 *.pyo
